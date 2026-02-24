@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | AAI IT Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gray-100">
+
+  <!-- Register Card -->
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+
+    <!-- AAI Logo -->
+    <div class="flex justify-center mb-6">
+      <img
+        src="{% static 'images/aai-logo.png' %}"
+        alt="Airports Authority of India Logo"
+        class="h-28 w-auto object-contain"
+      >
+    </div>
+
+    <!-- Heading -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-wide">
+        AAI IT Dashboard
+      </h1>
+      <p class="text-sm text-gray-500 mt-1">
+        User Registration
+      </p>
+    </div>
+
+    <!-- Errors -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 flex items-center gap-2 rounded-lg bg-red-100 border border-red-400 px-4 py-3 text-red-800 text-sm">
+          <span>⚠️</span>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Register Form -->
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        required
+        class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-700 focus:outline-none"
+      >
+
+      <!-- Password -->
+      <div class="relative">
+        <input
+          type="password"
+          name="password1"
+          id="password1"
+          placeholder="Password"
+          required
+          class="w-full border border-gray-300 rounded-lg p-3 pr-10 text-sm focus:ring-2 focus:ring-blue-700 focus:outline-none"
+        >
+        <button
+          type="button"
+          id="togglePassword1"
+          class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-blue-700"
+        >
+          👁
+        </button>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="relative">
+        <input
+          type="password"
+          name="password2"
+          id="password2"
+          placeholder="Confirm Password"
+          required
+          class="w-full border border-gray-300 rounded-lg p-3 pr-10 text-sm focus:ring-2 focus:ring-blue-700 focus:outline-none"
+        >
+        <button
+          type="button"
+          id="togglePassword2"
+          class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-blue-700"
+        >
+          👁
+        </button>
+      </div>
+
+      <!-- Station -->
+      <select
+        name="station"
+        required
+        class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-700 focus:outline-none"
+      >
+        <option value="">Select Station</option>
+        {% for station in stations %}
+          <option value="{{ station.id }}">{{ station.name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Register Button -->
+      <button
+        type="submit"
+        class="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-3 rounded-lg shadow-md transition"
+      >
+        Register
+      </button>
+    </form>
+
+    <!-- Back -->
+    <p class="text-center text-sm text-gray-600 mt-6">
+      <a href="{% url 'dashboard' %}" class="text-blue-700 hover:underline">
+        ← Back to Dashboard
+      </a>
+    </p>
+
+  </div>
+
+  <!-- Password Toggle Script -->
+  <script>
+    function togglePassword(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+
+      btn.addEventListener("click", () => {
+        input.type = input.type === "password" ? "text" : "password";
+      });
+    }
+
+    togglePassword("password1", "togglePassword1");
+    togglePassword("password2", "togglePassword2");
+  </script>
+
+</body>
+</html>
+
+
+   

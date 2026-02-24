@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-6 flex justify-center items-center">
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+    
+    <h2 class="text-2xl font-bold text-blue-700 mb-6">Edit Asset</h2>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <!-- Station -->
+      <div>
+        {{ form.station.label_tag }}
+        {{ form.station }}
+        {{ form.station.errors }}
+      </div>
+
+      <!-- Location  -->
+      <div>
+        {{ form.location_name.label_tag }}
+        {{ form.location_name }}
+        {{ form.location_name.errors }}
+      </div>
+
+      <!-- Asset Type -->
+      <div>
+        {{ form.asset_type.label_tag }}
+        {{ form.asset_type }}
+        {{ form.asset_type.errors }}
+      </div>
+
+      <!-- Make -->
+      <div>
+        {{ form.make.label_tag }}
+        {{ form.make }}
+        {{ form.make.errors }}
+      </div>
+
+      <!-- Model -->
+      <div>
+        {{ form.model.label_tag }}
+        {{ form.model }}
+        {{ form.model.errors }}
+      </div>
+
+      <!-- Serial Number -->
+      <div>
+        {{ form.serial_number.label_tag }}
+        {{ form.serial_number }}
+        {{ form.serial_number.errors }}
+      </div>
+
+      <!-- Date of Purchase -->
+      <div>
+        {{ form.date_of_purchase.label_tag }}
+        {{ form.date_of_purchase }}
+        {{ form.date_of_purchase.errors }}
+      </div>
+
+      <!-- Date of Issue -->
+      <div>
+        {{ form.date_of_issue.label_tag }}
+        {{ form.date_of_issue }}
+        {{ form.date_of_issue.errors }}
+      </div>
+
+      <!-- AAI Asset Code -->
+      <div>
+        {{ form.asset_code.label_tag }}
+        {{ form.asset_code }}
+        {{ form.asset_code.errors }}
+      </div>
+
+      <!-- Remarks -->
+      <div>
+        {{ form.remarks.label_tag }}
+        {{ form.remarks }}
+        {{ form.remarks.errors }}
+      </div>
+
+      <button type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+        Update Asset
+      </button>
+    </form>
+
+    <div class="mt-4">
+      <a href="{% url 'list_assets' %}" class="text-blue-600 hover:underline">← Back to Assets</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,133 @@
+
+{% extends "base.html" %}
+{% block title %}Engineer Report{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="-mx-6 mb-4">
+  <header class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 shadow-lg rounded-md">
+    <div class="w-full py-3 px-5 flex items-center justify-between flex-wrap">
+      <h2 class="text-lg font-semibold text-white">
+        👨‍🔧 IT Helpdesk – Engineer Performance Report
+      </h2>
+
+      <div class="flex gap-2 flex-wrap">
+        <a href="{% url 'ticket_list' %}"
+           class="px-4 py-2 bg-white text-indigo-700 rounded-md shadow text-sm">
+          ⬅ Back to Call List
+        </a>
+
+        <a href="{% url 'ticket_report' %}"
+           class="px-4 py-2 bg-green-600 text-white rounded-md shadow text-sm">
+          📊 Ticket Report
+        </a>
+      </div>
+    </div>
+  </header>
+</div>
+
+
+<div class="bg-white p-4 rounded-lg shadow mb-4 border">
+  <form method="get" class="flex flex-wrap gap-4 items-end">
+
+    <div>
+      <label class="text-sm font-medium">Engineer</label>
+      <select name="engineer" class="border p-2 rounded w-full">
+        <option value="">All Engineers</option>
+        {% for eng in engineers %}
+          <option value="{{ eng.id }}"
+            {% if selected_engineer == eng.id|stringformat:"s" %}selected{% endif %}>
+            {{ eng.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="text-sm font-medium">From (Call Created)</label>
+      <input type="date" name="start_date" value="{{ start_date }}"
+             class="border p-2 rounded w-full">
+    </div>
+
+    <div>
+      <label class="text-sm font-medium">To (Call Created)</label>
+      <input type="date" name="end_date" value="{{ end_date }}"
+             class="border p-2 rounded w-full">
+    </div>
+
+    <div class="flex gap-2 mt-5">
+      <button type="submit"
+        class="px-5 py-2 bg-blue-600 text-white rounded-md shadow">
+        🔍 Apply Filter
+      </button>
+
+      <a href="{% url 'export_engineer_report' %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&engineer={{ selected_engineer }}&status={{ active_status }}"
+         class="px-5 py-2 bg-green-600 text-white rounded-md shadow">
+        📥 Export Excel
+      </a>
+    </div>
+
+  </form>
+</div>
+
+
+    
+<!-- TABLE -->
+<div class="bg-white rounded-lg shadow border overflow-x-auto">
+<table class="w-full text-sm">
+  <thead>
+    <tr class="bg-gray-100 text-gray-700">
+      <th class="p-3 border">Engineer</th>
+      <th class="p-3 border text-center">Total Calls</th>
+      <th class="p-3 border text-center">Open Calls</th>
+      <th class="p-3 border text-center">Closed Calls</th>
+      <th class="p-3 border text-center">Avg Resolution Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in report_data %}
+    <tr class="hover:bg-gray-50">
+      <td class="p-3 border font-medium">{{ row.engineer.name }}</td>
+
+      <td class="p-3 border text-center">
+        <span class="px-3 py-1 bg-gray-200 rounded-full text-xs font-semibold">
+          {{ row.total_calls }}
+        </span>
+      </td>
+
+      <td class="p-3 border text-center">
+        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+          {{ row.open_calls }}
+        </span>
+      </td>
+
+      <td class="p-3 border text-center">
+        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+          {{ row.closed_calls }}
+        </span>
+      </td>
+
+      <td class="p-3 border text-center">
+        {% if row.avg_resolution %}
+          <span class="text-green-600 font-semibold">
+            ⏱ {{ row.avg_resolution }}
+          </span>
+        {% else %}
+          —
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5" class="text-center py-4 text-gray-500">
+        No data found
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
+

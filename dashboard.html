@@ -1,0 +1,301 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" x-data="{ openUserMenu: true, open: null }" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AAI RHQ-WR | IT-Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Navbar -->
+  <header class="bg-gradient-to-r from-sky-400 via-blue-600 to-blue-900 shadow-lg h-14">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between h-full">
+      <div class="flex items-center space-x-3 h-full">
+       
+       
+        <div class="h-full flex items-center justify-center">
+          <img src="{% static 'images/logo_15042021.png' %}" alt="AAI Logo" class="h-full object-contain" />
+        </div>
+
+        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-wide">
+          {% if user_station_name %}
+            AAI {{ user_station_name|upper }}
+          {% else %}
+            AAI RHQ-WR
+          {% endif %}
+        </h1>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <span class="text-sm text-blue-100 hidden md:block">IT-Dashboard</span>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}"
+             class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition">
+             Logout
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}"
+             class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-md transition">
+             Login
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gradient-to-b from-blue-50 to-white border-r shadow-md flex flex-col items-center p-4">
+      <div class="flex items-center justify-center mb-3 w-full border-b pb-2">
+        <h3 class="text-gray-700 font-semibold flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5.121 17.804A13.937 13.937 0 0112 15c2.21 0 4.292.535 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          User Menu
+        </h3>
+        <button @click="openUserMenu = !openUserMenu" class="p-1 rounded hover:bg-blue-100 transition ml-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav x-show="openUserMenu" x-transition class="w-full mt-2 space-y-2">
+
+    <!-- People Management -->
+    <div>
+        <button @click="open === 3 ? open = null : open = 3"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                 <span class="flex items-center gap-3">👥 <span x-show="sidebarOpen">People Management</span></span>
+
+                People Management
+            </span>
+            <span x-text="open === 3 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+        <ul x-show="open === 3" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'add_it_coordinator' %}" class="hover:text-blue-700">Add IT Coordinator</a></li>
+            <li><a href="{% url 'add_employee_directory' %}" class="hover:text-blue-700">Add Employee</a></li>
+        </ul>
+    </div>
+
+    <!-- Physical Inventory -->
+    <div>
+        <button @click="open === 1 ? open = null : open = 1"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                 <span class="flex items-center gap-3">💻 <span x-show="sidebarOpen">Physical Inventory</span></span>
+
+                Physical Inventory
+            </span>
+            <span x-text="open === 1 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+        <ul x-show="open === 1" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'add_asset' %}" class="hover:text-blue-700">Asset Form</a></li>
+              
+        </ul>
+    </div>
+
+    <!-- Contract Management -->
+    <div>
+        <button @click="open === 2 ? open = null : open = 2"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                 <span class="flex items-center gap-3">📑 <span x-show="sidebarOpen">Contract Management</span></span>
+
+                Contract Management
+            </span>
+            <span x-text="open === 2 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+        <ul x-show="open === 2" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'add_contract' %}" class="hover:text-blue-700">Add Contract</a></li>
+            <li><a href="{% url 'add_contract_staff' %}" class="hover:text-blue-700">Add Contract Staff</a></li>
+        </ul>
+    </div>
+
+
+    <!------ call management --->
+
+     <div>
+        <button @click="open === 4 ? open = null : open = 4"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                 <span class="flex items-center gap-3">👨‍💻 <span x-show="sidebarOpen">IT Service Desk</span></span>
+
+                 IT Service Desk
+            </span>
+            <span x-text="open === 4 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+        <ul x-show="open === 4" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'create_ticket' %}" class="hover:text-blue-700">Create New Ticket</a></li>
+        </ul>
+    </div>
+
+
+    <!-- MIS -->
+<div>
+    <button @click="open === 7 ? open = null : open = 7"
+            class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+
+        <span class="flex items-center gap-2">
+            <span class="flex items-center gap-3">📝 MIS</span>
+        </span>
+
+        <span x-text="open === 7 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+    </button>
+
+    <ul x-show="open === 7" x-transition
+        class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+
+        <!-- ALL STATIONS -->
+        <li>
+            <a href="{% url 'mis_form_list' %}" class="hover:text-blue-700">
+                Fill MIS Form
+            </a>
+        </li>
+
+        <!-- RHQ-WR / Superuser ONLY -->
+        {% if request.user.is_superuser or request.user.userprofile.is_rhqwr %}
+        <li>
+            <a href="{% url 'create_mis_form' %}" class="hover:text-blue-700">
+                Create MIS Form
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
+</div>
+
+
+
+    <!-- Master Data (RHQ only) -->
+    {% if request.user.is_superuser or request.user.userprofile.is_rhqwr %}
+    <div>
+        <button @click="open === 5 ? open = null : open = 5"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-700" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 7h18M3 12h18M3 17h18" />
+                </svg>
+                Master Data
+            </span>
+            <span x-text="open === 5 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+
+        <ul x-show="open === 5" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'add_department' %}" class="hover:text-blue-700">Add Department</a></li>
+            <li><a href="{% url 'add_designation' %}" class="hover:text-blue-700">Add Designation</a></li>
+            <li><a href="{% url 'add_station' %}" class="hover:text-blue-700">Add Station</a></li>
+            <li><a href="{% url 'add_user' %}" class="hover:text-blue-700">Add User</a></li>
+            <li><a href="{% url 'add_asset_type' %}" class="hover:text-blue-700">Add Asset Type</a></li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Add Location (VISIBLE TO ALL STATIONS) -->
+    <div>
+        <button @click="open === 6 ? open = null : open = 6"
+                class="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-blue-100 text-gray-800 transition">
+            <span class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-700" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 7h18M3 12h18M3 17h18" />
+                </svg>
+                Add Location
+            </span>
+            <span x-text="open === 6 ? '-' : '+'" class="text-xl font-bold text-blue-700"></span>
+        </button>
+
+        <ul x-show="open === 6" x-transition class="ml-8 mt-2 text-sm text-gray-700 list-disc list-inside space-y-1">
+            <li><a href="{% url 'add_location' %}" class="hover:text-blue-700">Add New Location</a></li>
+        </ul>
+    </div>
+
+</nav>
+    </aside>
+
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <div class="bg-gradient-to-r from-sky-400 via-blue-600 to-blue-800 py-3 px-6 shadow-inner flex items-center mt-3 ml-3 rounded-lg">
+        <h2 class="text-lg md:text-xl font-semibold text-white">Welcome to IT-Dashboard</h2>
+      </div>
+
+      <main class="flex-1 p-8 overflow-auto bg-gray-50">
+        <h3 class="text-xl font-semibold text-gray-700 mb-6">📊 Dashboard Overview</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- People Management -->
+          <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-blue-700">People Management</h3>
+            <p class="text-sm text-gray-600 mt-2">Manage Coordinators and Staff.</p>
+            <div class="mt-4 space-y-2">
+              <a href="{% url 'list_it_coordinators' %}" class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-2 rounded-lg transition">IT Coordinators</a>
+             
+              <!--  NEW: Employee Directory Button -->
+              <a href="{% url 'list_employee_directory' %}" class="block bg-indigo-600 hover:bg-indigo-700 text-white text-center font-semibold py-2 rounded-lg transition">Employee Directory</a>
+            </div>
+          </div>
+
+          <!-- Physical Inventory -->
+          <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-blue-700">Physical Inventory</h3>
+            <p class="text-sm text-gray-600 mt-2">Manage stations, assets, and locations.</p>
+            <div class="mt-4 space-y-2">
+              <a href="{% url 'list_assets' %}" class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-2 rounded-lg transition"> Assets</a>
+            </div>
+          </div>
+
+           <!-- Contract Management -->
+          <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-blue-700">Contract Management</h3>
+            <p class="text-sm text-gray-600 mt-2">Keep track of contracts and agencies.</p>
+            <div class="mt-4 space-y-2">
+            <a href="{% url 'list_contracts' %}" class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-2 rounded-lg transition">
+               Contracts
+            </a>
+             <a href="{% url 'list_contract_staff' %}" class="block bg-indigo-600 hover:bg-indigo-700 text-white text-center font-semibold py-2 rounded-lg transition" > Contract Staff</a>
+          </div>
+</div>
+
+       <!----CALL MANAGEMENT---->
+
+           <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-blue-700">IT Service Desk</h3>
+            <p class="text-sm text-gray-600 mt-2">Track service calls and Resolutions.</p>
+            <div class="mt-4 space-y-2">
+               <a href="{% url 'ticket_list' %}" class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-2 rounded-lg transition">IT Support Helpdesk</a>
+            </div>
+          </div>
+
+
+          <!-- MIS -->
+          <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition">
+            <h3 class="text-lg font-semibold text-blue-700">MIS</h3>
+            <p class="text-sm text-gray-600 mt-2">Track MIS reports across all stations.</p>
+            <div class="mt-4 space-y-2">
+              <a href="{% url 'mis_submission_list' %}" class="block bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-2 rounded-lg transition">MIS Reports</a>
+            </div> 
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <footer class="bg-blue-900 text-center text-sm text-white py-3 shadow-inner">
+    © 2025 All Rights Reserved | IT-WR
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-6 flex justify-center items-center">
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-green-600 mb-6">Edit Contract Staff</h2>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <!-- Station -->
+      <div>
+        <label class="block font-medium">Station</label>
+        {{ form.station }}
+        {{ form.station.errors }}
+      </div>
+
+      <!--Contractor Name -->
+      <div>
+        <label class="block font-medium">Contractor Name</label>
+        {{ form.contractor_name }}
+        {{ form.contractor_name.errors }}
+      </div>
+
+      <!-- Contract Number -->
+      <div>
+        <label class="block font-medium">Contract Number</label>
+        {{ form.contract_number }}
+        {{ form.contract_number.errors }}
+      </div>
+
+      <!-- Name -->
+      <div>
+        <label class="block font-medium">Name</label>
+        {{ form.name }}
+        {{ form.name.errors }}
+      </div>
+
+   
+      
+      <!-- Department Name -->
+      <div>
+        <label class="block font-medium">Department Name</label>
+        {{ form.department_name }}
+        {{ form.department_name.errors }}
+      </div>
+
+      <!-- Designation -->
+      <div>
+        <label class="block font-medium">Designation</label>
+        {{ form.designation }}
+        {{ form.designation.errors }}
+      </div>
+
+      <!-- Contact Number -->
+      <div>
+        <label class="block font-medium">Contact Number</label>
+        {{ form.contact_number }}
+        {{ form.contact_number.errors }}
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block font-medium">Email</label>
+        {{ form.email }}
+        {{ form.email.errors }}
+      </div>
+
+      <!-- Submit -->
+      <button type="submit"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+        Update Contract Staff
+      </button>
+
+      <!-- Back link -->
+      <div class="mt-4">
+        <a href="{% url 'list_contract_staff' %}" class="text-blue-600 hover:underline">← Back to List</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

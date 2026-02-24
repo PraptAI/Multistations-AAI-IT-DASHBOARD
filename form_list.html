@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HEADER -->
+<div class="-mx-6 mb-6">
+  <header class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md rounded-md">
+    <div class="w-full py-3 px-5 flex items-center justify-between flex-wrap">
+      <h2 class="text-lg font-semibold text-white">
+        📊 MIS Submissions
+        <span class="text-xs font-normal text-indigo-200">
+          Review & export data
+        </span>
+      </h2>
+
+      <div class="flex gap-2">
+        <a href="{% url 'dashboard' %}"
+           class="px-3 py-1.5 bg-white text-indigo-700 text-sm rounded-md">
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+</div>
+
+<!-- - TABS - -->
+<div class="flex gap-1 mb-4 bg-gray-100 p-1 rounded-lg w-fit text-sm">
+  <button onclick="showTab('active')" id="tab-active"
+          class="px-4 py-1.5 rounded-lg bg-white text-indigo-600 font-semibold shadow">
+    Active Forms
+  </button>
+
+  {% if user.is_superuser or user.userprofile.is_rhqwr %}
+  <button onclick="showTab('archived')" id="tab-archived"
+          class="px-4 py-1.5 rounded-lg text-gray-600 hover:bg-gray-200">
+    Archived Forms
+  </button>
+  {% endif %}
+</div>
+
+<!-- - ACTIVE FORMS - -->
+<div id="active-tab">
+  {% if active_forms %}
+  <div class="bg-white rounded-xl shadow border overflow-hidden">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left">Form Name</th>
+          <th class="px-6 py-3 text-center">Created On</th>
+          <th class="px-6 py-3 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for form in active_forms %}
+        <tr>
+          <td class="px-6 py-3 font-medium">{{ form.name }}</td>
+          <td class="px-6 py-3 text-center">
+            {{ form.created_at|date:"d-m-Y" }}
+          </td>
+          <td class="px-6 py-3 text-center">
+            <a href="{% url 'mis_form_fill' form.id %}"
+               class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm">
+              Fill Form
+            </a>
+
+            {% if user.is_superuser or user.userprofile.is_rhqwr %}
+            <a href="{% url 'archive_mis_form' form.id %}"
+               onclick="return confirm('Archive this form?')"
+               class="ml-2 px-4 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm">
+              Archive
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-center text-gray-500 py-10">No active forms.</p>
+  {% endif %}
+</div>
+
+<!-- - ARCHIVED FORMS (RHQ ONLY) - -->
+{% if user.is_superuser or user.userprofile.is_rhqwr %}
+<div id="archived-tab" class="hidden">
+  {% if archived_forms %}
+  <div class="bg-white rounded-xl shadow border overflow-hidden">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-left">Form Name</th>
+          <th class="px-6 py-3 text-center">Archived On</th>
+          <th class="px-6 py-3 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for form in archived_forms %}
+        <tr>
+          <td class="px-6 py-3 text-gray-600">{{ form.name }}</td>
+          <td class="px-6 py-3 text-center">
+            {{ form.archived_at|date:"d-m-Y" }}
+          </td>
+          <td class="px-6 py-3 text-center">
+            <a href="{% url 'unarchive_mis_form' form.id %}"
+               onclick="return confirm('Unarchive this form?')"
+               class="px-4 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm">
+              Unarchive
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-center text-gray-500 py-10">No archived forms.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- - TAB SCRIPT - -->
+<script>
+function showTab(tab) {
+  document.getElementById("active-tab").classList.add("hidden");
+  const archived = document.getElementById("archived-tab");
+  if (archived) archived.classList.add("hidden");
+
+  document.getElementById("tab-active").classList.remove("bg-white","text-indigo-600","shadow");
+  const archivedBtn = document.getElementById("tab-archived");
+  if (archivedBtn) archivedBtn.classList.remove("bg-white","text-indigo-600","shadow");
+
+  if (tab === "active") {
+    document.getElementById("active-tab").classList.remove("hidden");
+    document.getElementById("tab-active").classList.add("bg-white","text-indigo-600","shadow");
+  } else {
+    archived.classList.remove("hidden");
+    archivedBtn.classList.add("bg-white","text-indigo-600","shadow");
+  }
+}
+</script>
+
+{% endblock %}
+

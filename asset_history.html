@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!--- SECOND NAVBAR -->
+<div class="-mx-6">
+  <header class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 shadow-lg mt-1 mb-4">
+    <div class="w-full py-2 px-4 flex items-center justify-between flex-wrap">
+
+      <!-- Left title -->
+      <h2 class="text-lg font-semibold text-white">
+        🕘 Asset History
+      </h2>
+
+      <!-- Right buttons -->
+      <div class="flex items-center space-x-2 flex-wrap">
+        <a href="{% url 'list_assets' %}"
+           class="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm font-medium">
+          📋 Asset List
+        </a>
+        <a href="{% url 'issued_asset_list' %}"
+           class="px-3 py-1.5 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition text-sm font-medium">
+          📦 Issued Assets
+        </a>
+        <a href="{% url 'new_issuance' %}"
+           class="px-3 py-1.5 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition text-sm font-medium">
+          ➕ New Issuance
+        </a>
+        <a href="{% url 'add_asset' %}"
+           class="px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm font-medium">
+          ➕ Add Asset
+        </a>
+      </div>
+
+    </div>
+  </header>
+</div>
+{% if request.user.is_superuser or request.user.userprofile.is_rhqwr %}
+<div class="px-6 mb-3">
+  <form method="get" class="flex items-center gap-3">
+    <select name="station" class="border p-2 rounded-lg">
+      <option value="">All Stations</option>
+      {% for s in stations %}
+        <option value="{{ s.id }}" {% if s.id|stringformat:"s" == request.GET.station %}selected{% endif %}>
+          {{ s.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      Filter
+    </button>
+  </form>
+</div>
+{% endif %}
+
+
+
+
+<!-- MAIN CONTENT -->
+<div class="px-6 py-3">
+
+  <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+    <table id="historyTable" class="min-w-full text-sm text-gray-700">
+
+      <thead class="bg-gray-100 border-b border-gray-300">
+        <tr>
+          <th class="px-3 py-2">Asset Type</th>
+          <th class="px-3 py-2">Serial No</th>
+          <th class="px-3 py-2">Make</th>
+          <th class="px-3 py-2">Model</th>
+          <th class="px-3 py-2">AAI Code</th>
+          <th class="px-3 py-2">Issued To</th>
+          <th class="px-3 py-2">Department</th>
+          <th class="px-3 py-2">Date of Issue</th>
+          <th class="px-3 py-2">Date of Return</th>
+          <th class="px-3 py-2">Status</th>
+          <th class="px-3 py-2">Remarks</th>
+          <th class="px-3 py-2">Return Remarks</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-200">
+        {% for record in history %}
+        <tr class="hover:bg-gray-50 transition">
+
+          <td class="px-3 py-2">{{ record.asset_type|default:"-" }}</td>
+
+          <td class="px-3 py-2 font-medium text-blue-600">
+            {{ record.serial_number|default:"-" }}
+          </td>
+
+          <td class="px-3 py-2">{{ record.make|default:"-" }}</td>
+          <td class="px-3 py-2">{{ record.model|default:"-" }}</td>
+          <td class="px-3 py-2">{{ record.aai_asset_code|default:"-" }}</td>
+          <td class="px-3 py-2">{{ record.user_name|default:"-" }}</td>
+          <td class="px-3 py-2">{{ record.user_department|default:"-" }}</td>
+
+          <td class="px-3 py-2 whitespace-nowrap">
+            {{ record.date_of_issue|date:"d-m-Y"|default:"-" }}
+          </td>
+
+          <td class="px-3 py-2 whitespace-nowrap">
+            {{ record.date_of_return|date:"d-m-Y"|default:"—" }}
+          </td>
+
+          <td class="px-3 py-2">
+            {% if record.issued_status == "user" %}
+              <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
+                Issued
+              </span>
+            {% else %}
+              <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
+                Returned
+              </span>
+            {% endif %}
+          </td>
+
+          <td class="px-3 py-2">{{ record.remarks|default:"-" }}</td>
+          <td class="px-3 py-2">{{ record.return_remarks|default:"-" }}</td>
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="12" class="text-center text-gray-500 py-3">
+            No history found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+
+  <div class="mt-5">
+    <a href="{% url 'dashboard' %}"
+       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+      ← Back to Dashboard
+    </a>
+  </div>
+
+</div>
+
+<!-- DATATABLE SCRIPTS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.tailwindcss.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.1.1/css/buttons.dataTables.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.tailwindcss.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#historyTable').DataTable({
+      pageLength: 10,
+      lengthMenu: [10, 25, 50, 100],
+      order: [],
+      scrollX: true,
+      dom: '<"flex justify-between items-center mb-2"lfB>tip',
+      buttons: [
+        {
+          extend: 'excelHtml5',
+          text: '⬇️ Export Excel',
+          className: 'bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700'
+        },
+        {
+          extend: 'pdfHtml5',
+          text: '📄 Export PDF',
+          className: 'bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700',
+          orientation: 'landscape',
+          pageSize: 'A4'
+        },
+        {
+          extend: 'print',
+          text: '🖨️ Print',
+          className: 'bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700'
+        }
+      ]
+    });
+  });
+</script>
+
+{% endblock %}
+

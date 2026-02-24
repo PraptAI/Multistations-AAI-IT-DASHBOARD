@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-6 flex justify-center items-center">
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-yellow-600 mb-6">✏️ Edit Contract</h2>
+
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <button type="submit"
+        class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+        ✅ Update Contract
+      </button>
+    </form>
+
+    <div class="mt-4">
+      <a href="{% url 'list_contracts' %}" class="text-blue-600 hover:underline">← Back to Contract List</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

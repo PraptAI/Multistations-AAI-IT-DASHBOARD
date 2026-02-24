@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}IT-Dashboard{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+       
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                document.querySelectorAll(".msg").forEach(el => el.remove());
+            }, 3000);
+        });
+    </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- COMMAN NAVBAR  -->
+    <header class="backdrop-blur-md bg-gradient-to-r from-sky-500/90 via-blue-700/90 to-blue-900/90 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+
+
+        <div class="flex items-center gap-3">
+            <img src="{% static 'images/logo_15042021.png' %}"
+            alt="AAI LOGO"
+            class="h-10 w-auto">
+        
+
+            <!-- STATION NAME AND TITLE  -->
+            <div>
+                <h1 class="text-2xl font-bold text-white tracking-wide">
+                    {% if user_station_name %}
+                        AAI {{ user_station_name|upper }}
+                    {% else %}
+                        AAI RHQ-WR
+                    {% endif %}
+                </h1>
+                <p class="text-xs text-blue-100 tracking-wider uppercase">
+                    IT-Dashboard
+                </p>
+            </div>
+        </div>
+            <!-- USER INFO -->
+            {% if user.is_authenticated %}
+            <div class="flex items-center gap-3">
+
+                <!-- User Tag -->
+                <div class="px-3 py-1 bg-white/20 text-white rounded-lg backdrop-blur-sm text-sm">
+                    👤 {{ user.username }}
+                </div>
+
+                <!-- Logout -->
+                <a href="{% url 'logout' %}"
+                   class="px-4 py-1.5 bg-red-600 hover:bg-red-700 
+                          text-white text-sm font-medium rounded-lg 
+                          transition shadow-md">
+                    Logout
+                </a>
+            </div>
+
+            {% else %}
+            <a href="{% url 'login' %}"
+               class="px-4 py-1.5 bg-blue-800 hover:bg-blue-900 
+                      text-white text-sm rounded-lg shadow">
+                Login
+            </a>
+            {% endif %}
+        </div>
+    </header>
+  <!-- END NAVBAR -->
+
+
+    <!--  SUCCESS / ERROR MESSAGES -->
+    {% if messages %}
+    <div class="max-w-4xl mx-auto mt-4 px-4">
+        {% for message in messages %}
+        <div class="msg mb-3 px-4 py-3 rounded-lg border
+                    {% if message.tags == 'success' %}
+                        bg-green-100 text-green-800 border-green-300
+                    {% elif message.tags == 'error' %}
+                        bg-red-100 text-red-800 border-red-300
+                    {% else %}
+                        bg-gray-100 text-gray-800 border-gray-300
+                    {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <!--  MAIN CONTENT  -->
+    <main class="flex-1 px-6 pt-0 pb-6">
+        {% block content %}{% endblock %}
+    </main>
+
+<!-- FOOTER -->
+    <footer class="bg-blue-900 text-center text-sm text-white py-3 shadow-inner">
+        © 2025 All Rights Reserved | IT-WR
+    </footer>
+
+</body>
+</html>
+

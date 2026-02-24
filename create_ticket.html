@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Create Ticket{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="-mx-6 mb-4">
+  <header class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 shadow-lg rounded-md">
+    <div class="w-full py-3 px-5 flex items-center justify-between flex-wrap">
+      <h2 class="text-lg font-semibold text-white">
+        <i class="fa-solid fa-headset mr-2"></i> IT Helpdesk – Create Ticket
+      </h2>
+
+      <a href="{% url 'dashboard' %}"
+         class="px-4 py-2 bg-white text-indigo-700 font-medium rounded-md shadow hover:bg-gray-100 text-sm">
+        <i class="fa fa-arrow-left mr-1"></i> Back
+      </a>
+    </div>
+  </header>
+</div>
+
+<div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow border border-gray-200">
+
+  <!-- FORM ERRORS -->
+  {% if form.errors %}
+    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+      <p class="font-semibold mb-2">Please correct the errors below:</p>
+      <ul class="list-disc list-inside text-sm">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% csrf_token %}
+
+    <!-- REQUESTER -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Requester</label>
+      {{ form.requester|add_class:"w-full border rounded-lg p-2" }}
+      {% if form.requester.errors %}
+        <p class="text-sm text-red-600">{{ form.requester.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- EMP DETAILS  -->
+    <div class="space-y-2">
+      <input id="emp_department" placeholder="Department" readonly class="input-readonly">
+      <input id="emp_station" placeholder="Station" readonly class="input-readonly">
+      <input id="emp_designation" placeholder="Designation" readonly class="input-readonly">
+      <input id="emp_phone" placeholder="Phone" readonly class="input-readonly">
+      <input id="emp_email" placeholder="Email" readonly class="input-readonly">
+    </div>
+
+    <!-- SUBJECT -->
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium mb-1">Subject</label>
+      {{ form.subject|add_class:"w-full border rounded-lg p-2" }}
+      {% if form.subject.errors %}
+        <p class="text-sm text-red-600">{{ form.subject.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- ASSIGN ENGINEER -->
+    <div>
+      <div class="flex justify-between mb-1">
+        <label class="text-sm font-medium">Assign Engineer</label>
+        <button type="button"
+                onclick="openEngineerModal()"
+                class="text-sm text-blue-600 hover:underline">
+          + Add Engineer
+        </button>
+      </div>
+      {{ form.assigned_engineer|add_class:"w-full border rounded-lg p-2" }}
+      {% if form.assigned_engineer.errors %}
+        <p class="text-sm text-red-600">{{ form.assigned_engineer.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- CALL TIME -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Call Time</label>
+      {{ form.call_time|add_class:"w-full border rounded-lg p-2" }}
+      {% if form.call_time.errors %}
+        <p class="text-sm text-red-600">{{ form.call_time.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- URGENCY -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Urgency</label>
+      {{ form.urgency|add_class:"w-full border rounded-lg p-2" }}
+    </div>
+
+    <!-- PRIORITY -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Priority</label>
+      {{ form.priority|add_class:"w-full border rounded-lg p-2" }}
+    </div>
+
+    <!-- CATEGORY -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Category</label>
+      {{ form.category|add_class:"w-full border rounded-lg p-2" }}
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium mb-1">Description</label>
+      {{ form.description|add_class:"w-full border rounded-lg p-2" }}
+      {% if form.description.errors %}
+        <p class="text-sm text-red-600">{{ form.description.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="md:col-span-2 flex justify-end gap-3">
+      <button type="submit"
+              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <i class="fa fa-ticket mr-1"></i> Create Ticket
+      </button>
+    </div>
+  </form>
+</div>
+
+
+<div id="engineerModal"
+     class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+
+  <div class="bg-white p-6 rounded-xl w-96 shadow-lg">
+    <h3 class="text-lg font-semibold mb-4">Add Engineer</h3>
+
+    <input id="engineerName"
+           class="w-full border rounded-lg p-2 mb-4"
+           placeholder="Engineer Name">
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closeEngineerModal()" class="px-4 py-2 bg-gray-200 rounded-lg">
+        Cancel
+      </button>
+      <button onclick="saveEngineer()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+document.getElementById('id_requester')?.addEventListener('change', function() {
+  const empId = this.value;
+  if (!empId) return;
+
+  fetch(`/ajax/employee-details/?employee_id=${empId}`)
+    .then(res => res.json())
+    .then(data => {
+      emp_department.value = data.department || '';
+      emp_station.value = data.station || '';
+      emp_designation.value = data.designation || '';
+      emp_phone.value = data.phone || '';
+      emp_email.value = data.email || '';
+    });
+});
+
+function openEngineerModal() {
+  engineerModal.classList.remove('hidden');
+  engineerModal.classList.add('flex');
+}
+
+function closeEngineerModal() {
+  engineerModal.classList.add('hidden');
+}
+
+function saveEngineer() {
+  let name = engineerName.value.trim();
+  if (!name) return alert("Enter engineer name");
+
+  fetch("{% url 'add_engineer_ajax' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `name=${encodeURIComponent(name)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    const select = document.getElementById("id_assigned_engineer");
+    const option = new Option(data.name, data.id, true, true);
+    select.add(option);
+    closeEngineerModal();
+    engineerName.value = "";
+  });
+}
+</script>
+
+<style>
+.input-readonly {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+}
+</style>
+
+{% endblock %}
+
